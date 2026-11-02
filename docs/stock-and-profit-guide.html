@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stock &amp; Profit Guide</title>
+<style>
+  :root {
+    --bg: #f6f7fb; --card: #ffffff; --text: #1e2333; --muted: #5d6478; --line: #e3e6ee;
+    --brand: #4f46e5; --brand-soft: #eef0ff; --green: #0f7a4f; --green-soft: #e7f6ef;
+    --red: #b42318; --red-soft: #fdecea; --amber: #a15c00; --amber-soft: #fff4e0;
+    --code: #f1f3f8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12141b; --card: #1b1e28; --text: #e7e9f0; --muted: #a2a8ba; --line: #2c3040;
+      --brand: #8b85ff; --brand-soft: #25264a; --green: #4fd19a; --green-soft: #15322a;
+      --red: #ff8a80; --red-soft: #3a1d1d; --amber: #ffc163; --amber-soft: #3a2c14;
+      --code: #232735;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 24px 16px 64px; }
+  header h1 { margin: 0 0 4px; font-size: 1.9rem; }
+  header p { margin: 0; color: var(--muted); }
+  nav.toc { margin: 20px 0 8px; display: flex; flex-wrap: wrap; gap: 8px; }
+  nav.toc a { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: .9rem; color: var(--text); text-decoration: none; }
+  nav.toc a:hover { border-color: var(--brand); color: var(--brand); }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px 22px 14px; margin-top: 18px; }
+  h2 { margin: 0 0 12px; font-size: 1.35rem; display: flex; align-items: center; gap: 10px; }
+  h2 .n { background: var(--brand); color: #fff; border-radius: 8px; font-size: .95rem; padding: 2px 9px; }
+  h3 { margin: 20px 0 8px; font-size: 1.05rem; }
+  p, li { color: var(--text); }
+  .muted { color: var(--muted); }
+  ol.steps { padding-left: 0; list-style: none; counter-reset: s; }
+  ol.steps > li { counter-increment: s; position: relative; padding: 2px 0 10px 40px; }
+  ol.steps > li::before { content: counter(s); position: absolute; left: 0; top: 2px; width: 28px; height: 28px; border-radius: 50%; background: var(--brand-soft); color: var(--brand); font-weight: 700; display: grid; place-items: center; font-size: .9rem; }
+  .ui { background: var(--code); border: 1px solid var(--line); border-radius: 6px; padding: 0 6px; font-weight: 600; font-size: .92em; white-space: nowrap; }
+  code, .f { background: var(--code); border-radius: 6px; padding: 1px 6px; font-family: ui-monospace, Consolas, monospace; font-size: .9em; }
+  .table { overflow-x: auto; margin: 10px 0 14px; }
+  table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: .82rem; text-transform: uppercase; letter-spacing: .03em; }
+  td.num, th.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  tr.total td { font-weight: 700; border-top: 2px solid var(--line); }
+  .box { border-radius: 10px; padding: 12px 14px; margin: 12px 0; border: 1px solid transparent; }
+  .tip { background: var(--green-soft); border-color: color-mix(in srgb, var(--green) 30%, transparent); }
+  .warn { background: var(--amber-soft); border-color: color-mix(in srgb, var(--amber) 30%, transparent); }
+  .bad { background: var(--red-soft); border-color: color-mix(in srgb, var(--red) 30%, transparent); }
+  .info { background: var(--brand-soft); border-color: color-mix(in srgb, var(--brand) 30%, transparent); }
+  .box b:first-child { display: block; margin-bottom: 2px; }
+  .tag { display: inline-block; border-radius: 6px; padding: 0 7px; font-size: .8rem; font-weight: 700; white-space: nowrap; }
+  .in { background: var(--green-soft); color: var(--green); }
+  .out { background: var(--red-soft); color: var(--red); }
+  .zero { background: var(--code); color: var(--muted); }
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; margin: 12px 0; }
+  .flow .node { flex: 1 1 150px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .flow .node b { display: block; }
+  .flow .node span { color: var(--muted); font-size: .88rem; }
+  .flow .arrow { align-self: center; color: var(--muted); font-size: 1.3rem; }
+  .formula { background: var(--code); border-radius: 10px; padding: 10px 14px; font-family: ui-monospace, Consolas, monospace; font-size: .92rem; overflow-x: auto; white-space: pre; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .grid2 > div { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .grid2 h4 { margin: 0 0 6px; }
+  footer { margin-top: 28px; color: var(--muted); font-size: .85rem; text-align: center; }
+  @media print { body { background: #fff; } section { break-inside: avoid; } nav.toc { display: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Stock &amp; Profit Guide</h1>
+    <p>My Mobile Shop POS: adding products, adding stock, unit cost, IMEI, stock movements, adjustments and how each one affects Profit &amp; Loss.</p>
+  </header>
+
+  <nav class="toc">
+    <a href="#big">1. Big picture</a>
+    <a href="#product">2. Add a product</a>
+    <a href="#imei">3. Track IMEI</a>
+    <a href="#addstock">4. Add stock</a>
+    <a href="#cost">5. Unit cost</a>
+    <a href="#movements">6. Stock movements</a>
+    <a href="#adjust">7. Stock adjustments</a>
+    <a href="#pl">8. Profit &amp; Loss</a>
+    <a href="#faq">9. Mistakes &amp; FAQ</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="big">
+    <h2><span class="n">1</span>The big picture</h2>
+    <p>Every product that keeps stock has two numbers: <b>quantity in stock</b> and <b>average cost</b> (what one unit cost you on average). Everything else in this guide changes one or both of those numbers.</p>
+    <div class="flow">
+      <div class="node"><b>Stock comes in</b><span>Opening stock, Purchase, Stock-in adjustment, customer return</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>Product</b><span>Qty in stock + average cost (recalculated on every stock-in)</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>Stock goes out</b><span>Sale, repair spare used, lost / damaged adjustment, vendor return</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>Profit &amp; Loss</b><span>Sales − cost of goods sold − write-offs − expenses</span></div>
+    </div>
+    <p>Each of these steps writes one line to <b>Stock movements</b>, a permanent history of every stock change. Lines are never edited or deleted. Mistakes are fixed by adding a new line.</p>
+    <div class="box info"><b>Key rule</b>Buying stock is <u>not</u> an expense. A purchase turns money into stock. The cost only reaches Profit &amp; Loss when you <b>sell</b> the item (as cost of goods sold) or <b>lose/damage</b> it (as a write-off).</div>
+  </section>
+
+  <!-- 2 -->
+  <section id="product">
+    <h2><span class="n">2</span>How to add a product</h2>
+    <ol class="steps">
+      <li>Go to <span class="ui">Stock</span> in the top menu, then click <span class="ui">+ Add product</span> (top right).</li>
+      <li>Fill in the fields (explained in the table below). Only <b>Product name</b>, <b>Type</b> and <b>Selling price</b> are required.</li>
+      <li>Decide on <span class="ui">Track IMEI / serial numbers for each unit</span>. See <a href="#imei">section 3</a>. <b>Get this right now</b>, because it can only be changed later while stock is 0.</li>
+      <li>If you already have this item on the shelf, fill in the <b>Opening stock</b> box at the bottom: quantity, unit cost and, for IMEI items, one IMEI per unit.</li>
+      <li>Click <span class="ui">Save &amp; select</span>.</li>
+    </ol>
+    <div class="box warn"><b>The Opening stock box only appears when creating a product.</b>It is not shown on the Edit screen. If you save with 0 opening stock, you have to add stock another way (see <a href="#addstock">section 4</a>).</div>
+
+    <div class="table"><table>
+      <thead><tr><th>Field</th><th>What to enter</th></tr></thead>
+      <tbody>
+        <tr><td><b>Product name</b></td><td>Clear name the cashier will search for, e.g. <i>iPhone 16 Back Cover – Clear</i>.</td></tr>
+        <tr><td><b>Type</b></td><td><b>Phone</b>, <b>Accessory</b>, <b>Spare part</b>, <b>Consumable</b>, <b>Other</b>: keep stock.<br><b>Service</b>: no stock (labour like "Screen replacement").</td></tr>
+        <tr><td><b>Category / Brand / Model</b></td><td>For filtering and reports. Use the <span class="ui">+</span> button to create a new one on the spot.</td></tr>
+        <tr><td><b>SKU / Barcode</b></td><td>Optional. If filled, scanning or typing it in New Sale adds the item instantly. Must be unique.</td></tr>
+        <tr><td><b>Selling price</b></td><td>Default price on the bill. You can still change it per bill.</td></tr>
+        <tr><td><b>Purchase cost (reference)</b></td><td>Just a reference. The <b>real</b> stock cost comes from opening stock and purchases. If you leave the opening <i>Unit cost</i> blank, this value is used for it.</td></tr>
+        <tr><td><b>Tax rate %</b></td><td>Blank = the shop default from Settings.</td></tr>
+        <tr><td><b>Warranty (months)</b></td><td>Printed on the invoice when greater than 0.</td></tr>
+        <tr><td><b>Minimum stock</b></td><td>Low-stock alert level. Stock at or below this shows in red / in the <i>Low stock only</i> filter.</td></tr>
+        <tr><td><b>Unit</b></td><td><code>pcs</code>, <code>box</code>, <code>mtr</code>…</td></tr>
+        <tr><td><b>Preferred vendor</b></td><td>Your usual supplier. Optional.</td></tr>
+        <tr><td><b>Track IMEI</b></td><td>Only for items with a unique serial number per unit (phones). See next section.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- 3 -->
+  <section id="imei">
+    <h2><span class="n">3</span>Track IMEI: when to use it</h2>
+    <p>With IMEI tracking on, the app follows <b>every single unit</b> by its IMEI/serial number, not just a count.</p>
+    <div class="grid2">
+      <div>
+        <h4>✅ Turn it ON for</h4>
+        Phones, tablets, smart watches, laptops: any item where each unit has its own serial number and you care which exact unit was sold (warranty, theft checks, returns).
+      </div>
+      <div>
+        <h4>❌ Keep it OFF for</h4>
+        Back covers, tempered glass, cables, chargers, earphones without serials, spare parts, consumables. Otherwise you'd have to type a fake serial for every unit you buy and sell.
+      </div>
+    </div>
+    <h3>What changes when it is ON</h3>
+    <div class="table"><table>
+      <thead><tr><th>Action</th><th>IMEI OFF</th><th>IMEI ON</th></tr></thead>
+      <tbody>
+        <tr><td>Opening stock / Purchase</td><td>Enter qty only</td><td>Enter exactly one IMEI per unit (5 qty → 5 IMEIs). Duplicate IMEIs are refused.</td></tr>
+        <tr><td>Selling (New Sale)</td><td>Type the qty</td><td>Pick/scan the exact IMEI. The qty box is locked to the number of IMEIs.</td></tr>
+        <tr><td>Scanning in New Sale</td><td>Barcode / SKU</td><td>Barcode / SKU <b>or</b> the IMEI itself</td></tr>
+        <tr><td>Search invoices / purchases</td><td>—</td><td>Search by IMEI to find who bought it and from which vendor it came</td></tr>
+        <tr><td>Stock adjustment</td><td>Allowed</td><td><b>Not allowed.</b> Stock changes only through purchase, sale and return, so the IMEI list always matches the count.</td></tr>
+        <tr><td>Change the setting later</td><td colspan="2">Only while the stock is exactly <b>0</b>.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- 4 -->
+  <section id="addstock">
+    <h2><span class="n">4</span>Ways to add stock and which to use</h2>
+    <div class="table"><table>
+      <thead><tr><th>Method</th><th>Where</th><th>Use it when</th><th>IMEI items?</th><th>Profit &amp; Loss effect</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Opening stock</b></td>
+          <td>Add product form (new products only)</td>
+          <td>Stock you already had on the shelf before you started using the app</td>
+          <td>✅ (enter IMEIs)</td>
+          <td><span class="tag zero">None</span> Opening stock is not profit or loss.</td>
+        </tr>
+        <tr>
+          <td><b>Purchase</b></td>
+          <td><code>localhost:3000/purchases/new</code> → <span class="ui">Save &amp; receive stock</span></td>
+          <td>Any new stock you buy from a supplier. <b>This is the normal way.</b></td>
+          <td>✅ (enter IMEIs per line)</td>
+          <td><span class="tag zero">None now</span> Cost goes into stock. It reaches P&amp;L only when sold. The vendor balance / payment is recorded.</td>
+        </tr>
+        <tr>
+          <td><b>Stock adjustment: Stock in</b></td>
+          <td><span class="ui">Stock</span> → <span class="ui">Stock adjustment</span></td>
+          <td>A stock count finds <b>more</b> than the system shows (found items)</td>
+          <td>❌</td>
+          <td><span class="tag in">Gain</span> The value is subtracted from <i>Inventory write-offs</i>, so profit goes <b>up</b> in that period.</td>
+        </tr>
+      </tbody>
+    </table></div>
+
+    <div class="box bad"><b>Don't use "Stock in" adjustment as opening stock.</b>It would show the whole value of that stock as a gain in this month's Profit &amp; Loss. For example, adding 10 covers × ₹200 would add ₹2,000 of profit that never happened.</div>
+
+    <h3>My product already exists with 0 stock. How do I add opening stock?</h3>
+    <p>The Edit screen has no opening stock box. Your options, best first:</p>
+    <ol class="steps">
+      <li><b>If it was bought from a supplier:</b> record a <b>Purchase</b> from that vendor with the real qty and cost, and enter the amount you paid. This is correct in every report.</li>
+      <li><b>If it's genuinely old stock and the product has no sales yet:</b> deactivate the product (Edit → mark inactive), then add it again with <b>Opening stock</b> filled in. If the SKU/barcode is refused as "already used", clear them on the old product first.</li>
+      <li><b>Last resort:</b> Stock adjustment → Stock in, with reason "Opening stock". Stock and cost will be right, but remember that this month's P&amp;L shows that value as a gain (lower write-offs).</li>
+    </ol>
+  </section>
+
+  <!-- 5 -->
+  <section id="cost">
+    <h2><span class="n">5</span>Unit cost: what to enter and how average cost works</h2>
+    <p><b>Unit cost = what ONE unit actually cost you</b>, not the selling price. This number drives your profit: profit on a sale = selling price − cost.</p>
+
+    <h3>a) Opening stock unit cost</h3>
+    <p>Enter what you paid per unit for the stock already on the shelf. Example: 10 back covers bought at ₹200 each → <b>Unit cost 200</b>. For IMEI phones with different costs, use the average (or add them as separate purchases, see below).</p>
+
+    <h3>b) Purchase: the app calculates a "landed" cost</h3>
+    <p>On a purchase you enter the vendor's price. The app then spreads discount, shipping and other charges over the units, including free units, to get the <b>Landed / unit</b> cost shown in the last column:</p>
+    <div class="formula">line total      = qty × unit cost − line discount
+landed / unit   = (line total [+ tax*] + share of shipping &amp; other charges) ÷ (qty + free qty)
+
+* purchase tax is added to cost only when Settings → Tax says purchase tax is part of cost</div>
+    <div class="box info"><b>Example: 2 × iPhone 16 (IMEI tracked)</b>
+      Unit cost ₹60,000 × 2 = ₹1,20,000, discount ₹1,000 → line total ₹1,19,000. Shipping ₹500.<br>
+      Landed / unit = (1,19,000 + 500) ÷ 2 = <b>₹59,750</b> per phone. Enter both IMEIs on the line.
+    </div>
+
+    <h3>c) Weighted average cost: what the product remembers</h3>
+    <p>Every time stock comes in, the app mixes the new cost with the old one:</p>
+    <div class="formula">new average = (qty on hand × old average + qty in × new unit cost) ÷ (qty on hand + qty in)</div>
+    <div class="table"><table>
+      <thead><tr><th>Event</th><th class="num">Qty</th><th class="num">Unit cost</th><th class="num">Stock after</th><th class="num">Average cost after</th></tr></thead>
+      <tbody>
+        <tr><td>Opening stock: back covers</td><td class="num">+3</td><td class="num">₹150.00</td><td class="num">3</td><td class="num">₹150.00</td></tr>
+        <tr><td>Purchase</td><td class="num">+5</td><td class="num">₹200.00</td><td class="num">8</td><td class="num">(3×150 + 5×200) ÷ 8 = <b>₹181.25</b></td></tr>
+        <tr><td>Sale of 2 @ ₹600</td><td class="num">−2</td><td class="num">₹181.25</td><td class="num">6</td><td class="num">₹181.25 (unchanged)</td></tr>
+      </tbody>
+    </table></div>
+    <p>Sales and write-offs always take stock out at the <b>current average cost</b>. They never change the average.</p>
+
+    <h3>d) IMEI items and cost</h3>
+    <div class="box warn"><b>Each IMEI remembers the cost it was bought at, but profit uses the product's average.</b>
+      If you buy IMEI&nbsp;A at ₹59,750 and later IMEI&nbsp;B at ₹62,000, the product average becomes ₹60,875. Whichever phone you sell, the invoice records <b>₹60,875</b> as its cost. Over all sales the total profit is the same; only the split between individual invoices differs.<br>
+      <span class="muted">Tip: if one model's buying price varies a lot, create separate products (e.g. "iPhone 16 128GB Black") so each average stays meaningful.</span>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section id="movements">
+    <h2><span class="n">6</span>Stock movements: the stock history</h2>
+    <p><span class="ui">Stock</span> → <span class="ui">Stock movements</span> tab (or open a product to see only its history). One row per change, with date, type, qty (+ in / − out), unit cost, value, stock balance after, average cost after, the document number (invoice, purchase, adjustment) and IMEIs.</p>
+    <div class="table"><table>
+      <thead><tr><th>Type</th><th>Created by</th><th>Stock</th><th>Profit &amp; Loss</th></tr></thead>
+      <tbody>
+        <tr><td><code>OPENING</code></td><td>Opening stock on a new product</td><td><span class="tag in">+ in</span></td><td>None</td></tr>
+        <tr><td><code>PURCHASE</code></td><td>Purchase received</td><td><span class="tag in">+ in</span></td><td>None (becomes stock)</td></tr>
+        <tr><td><code>PURCHASE_CANCEL</code></td><td>Received purchase cancelled</td><td><span class="tag out">− out</span></td><td>None</td></tr>
+        <tr><td><code>PURCHASE_RETURN</code></td><td>Items returned to vendor</td><td><span class="tag out">− out</span></td><td>Only the difference if the vendor credits less than landed cost (e.g. shipping not refunded) → write-off</td></tr>
+        <tr><td><code>SALE</code></td><td>Invoice saved</td><td><span class="tag out">− out</span></td><td><b>Cost of goods sold</b></td></tr>
+        <tr><td><code>SALE_CANCEL</code></td><td>Invoice cancelled</td><td><span class="tag in">+ in</span></td><td>Sale removed from P&amp;L</td></tr>
+        <tr><td><code>SALE_RETURN</code></td><td>Customer return, put back to stock</td><td><span class="tag in">+ in</span></td><td>Revenue and cost reversed</td></tr>
+        <tr><td><code>SALE_RETURN_DAMAGED</code></td><td>Customer return, not resellable</td><td><span class="tag zero">damaged +</span></td><td><b>Write-off</b></td></tr>
+        <tr><td><code>REPAIR_CONSUMPTION</code></td><td>Spare part used in a repair / service bill</td><td><span class="tag out">− out</span></td><td>Spare-part cost in repairs</td></tr>
+        <tr><td><code>ADJUSTMENT_IN</code></td><td>Stock adjustment: stock in</td><td><span class="tag in">+ in</span></td><td><b>Gain</b> (reduces write-offs)</td></tr>
+        <tr><td><code>ADJUSTMENT_OUT</code></td><td>Stock adjustment: stock out</td><td><span class="tag out">− out</span></td><td><b>Write-off</b></td></tr>
+        <tr><td><code>DAMAGED</code></td><td>Stock adjustment: damaged</td><td><span class="tag out">− out</span> → damaged</td><td><b>Write-off</b></td></tr>
+      </tbody>
+    </table></div>
+    <div class="box tip"><b>Use it to answer "where did my stock go?"</b>Filter by product, read down the <i>Balance after</i> column and you can see exactly which invoice, purchase or adjustment changed it, and who did it.</div>
+  </section>
+
+  <!-- 7 -->
+  <section id="adjust">
+    <h2><span class="n">7</span>Stock adjustments: fixing count differences</h2>
+    <p>Use these only when the physical shelf count differs from the app. Purchases, sales and returns already update stock automatically.</p>
+    <ol class="steps">
+      <li><span class="ui">Stock</span> → <span class="ui">Stock adjustment</span> (or the adjust button on a product).</li>
+      <li>Choose the product (not possible for IMEI-tracked items).</li>
+      <li>Choose the type, enter quantity and a <b>reason</b> (required, e.g. "Monthly count – 1 missing").</li>
+      <li>For <i>Stock in</i> only: optionally enter unit cost. Blank = current average cost (recommended).</li>
+      <li><span class="ui">Save adjustment</span>. A numbered adjustment and a stock movement are created and logged with your user name.</li>
+    </ol>
+    <div class="table"><table>
+      <thead><tr><th>Type</th><th>Meaning</th><th>Stock</th><th>Valued at</th><th>P&amp;L</th></tr></thead>
+      <tbody>
+        <tr><td><b>Stock out</b></td><td>Lost, stolen, count shortage</td><td>− qty</td><td>Current average cost</td><td><span class="tag out">Loss</span> write-off</td></tr>
+        <tr><td><b>Damaged</b></td><td>Broken, unsellable. Moved to the damaged count, not just removed.</td><td>− qty (+ damaged qty)</td><td>Current average cost</td><td><span class="tag out">Loss</span> write-off</td></tr>
+        <tr><td><b>Stock in</b></td><td>Found extra stock in a count</td><td>+ qty</td><td>Cost you enter, or current average</td><td><span class="tag in">Gain</span> reduces write-offs</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box info"><b>Example (back covers, average ₹181.25)</b>
+      1 cover lost → Stock out 1 → write-off <b>₹181.25</b>.<br>
+      1 cover cracked → Damaged 1 → write-off <b>₹181.25</b>, damaged qty becomes 1.<br>
+      Later 1 lost cover is found → Stock in 1 → gain <b>₹181.25</b>.<br>
+      Net write-off for the month = 181.25 + 181.25 − 181.25 = <b>₹181.25</b>.
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section id="pl">
+    <h2><span class="n">8</span>How Profit &amp; Loss is calculated</h2>
+    <p>Open it at <code>localhost:3000/reports/profit-loss</code> and pick a date range. It works on the <b>invoice date</b> (accrual basis), not when cash was received.</p>
+    <div class="formula">Net revenue      = sales (after discounts, excluding tax) − sales returns
+Direct costs     = cost of goods sold + spare parts used in repairs + inventory write-offs
+Gross profit     = net revenue − direct costs
+Net profit       = gross profit − operating expenses − other expenses</div>
+    <ul>
+      <li><b>Not in P&amp;L:</b> opening stock, purchases, paying vendors, customer credit payments. They move money or stock but are not profit or loss.</li>
+      <li><b>Tax collected</b> is shown separately. It's owed to the government, not your income.</li>
+      <li><b>Cancelled invoices</b> are excluded completely.</li>
+    </ul>
+
+    <h3>Worked example: one month of back covers</h3>
+    <div class="table"><table>
+      <thead><tr><th>What happened</th><th class="num">Effect on P&amp;L</th></tr></thead>
+      <tbody>
+        <tr><td>Opening stock 3 @ ₹150 and purchase 5 @ ₹200 (avg ₹181.25)</td><td class="num">₹0</td></tr>
+        <tr><td>Sold 2 covers @ ₹600 (no tax)</td><td class="num">Revenue ₹1,200.00</td></tr>
+        <tr><td>Cost of those 2 covers (2 × ₹181.25)</td><td class="num">− ₹362.50</td></tr>
+        <tr><td>1 cover damaged (adjustment)</td><td class="num">− ₹181.25</td></tr>
+        <tr class="total"><td>Gross profit</td><td class="num">₹656.25</td></tr>
+        <tr><td>Expense: electricity</td><td class="num">− ₹300.00</td></tr>
+        <tr class="total"><td>Net profit</td><td class="num">₹356.25</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box warn"><b>Wrong cost = wrong profit.</b>If you enter opening stock with unit cost 0, every sale of that stock shows 100% profit. If you use "Stock in" for new stock, profit jumps by that stock's value. Always enter the real cost.</div>
+  </section>
+
+  <!-- 9 -->
+  <section id="faq">
+    <h2><span class="n">9</span>Common mistakes &amp; FAQ</h2>
+    <h3>I forgot opening stock when creating the product</h3>
+    <p>See <a href="#addstock">section 4 → "My product already exists with 0 stock"</a>.</p>
+    <h3>I ticked Track IMEI on a back cover by mistake</h3>
+    <p>If stock is 0: Edit the product, untick it and save. If stock is above 0, the checkbox is locked. You'd first need to bring stock to 0 (sell, return to vendor or cancel the purchase).</p>
+    <h3>Why can't I adjust stock of an iPhone?</h3>
+    <p>IMEI items can't be adjusted manually, so the count always matches the list of IMEIs. Use a purchase, sale, sales return or vendor return instead.</p>
+    <h3>Why did the average cost change after a purchase?</h3>
+    <p>Because new units at a different price were mixed in (see <a href="#cost">section 5c</a>). That's expected.</p>
+    <h3>Stock shows negative</h3>
+    <p>Only happens if an admin sold beyond stock with the override. The next purchase brings it back up. Check <i>Stock movements</i> for the sale that caused it.</p>
+    <h3>Should the "Purchase cost (reference)" field match my real cost?</h3>
+    <p>It's only a reference and is updated automatically by purchases and opening stock. The real cost used in profit is the <b>average cost</b> column on the Stock page.</p>
+  </section>
+
+  <footer>Based on how this POS calculates stock and profit (weighted-average costing, accrual Profit &amp; Loss). Generated 26 Oct 2026.</footer>
+</div>
+</body>
+</html>
