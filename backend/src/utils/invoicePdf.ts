@@ -1,5 +1,6 @@
 import PDFDocument from 'pdfkit';
 import type { Response } from 'express';
+import { TIME_ZONE } from './dates';
 
 interface Line {
   name: string;
@@ -51,7 +52,7 @@ export function streamInvoicePdf(res: Response, sale: InvoiceData, shop: Shop) {
   const precision = shop.currencyPrecision ?? 2;
   const cur = shop.currencyCode ?? '';
   const fmt = (n: number) => `${cur} ${Number(n ?? 0).toLocaleString('en-IN', { minimumFractionDigits: precision, maximumFractionDigits: precision })}`;
-  const fmtDate = (d: Date) => new Date(d).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+  const fmtDate = (d: Date) => new Date(d).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: TIME_ZONE });
 
   const doc = new PDFDocument({ size: 'A4', margin: 40 });
   res.setHeader('Content-Type', 'application/pdf');
@@ -96,7 +97,7 @@ export function streamInvoicePdf(res: Response, sale: InvoiceData, shop: Shop) {
     const extra: string[] = [];
     if (it.description) extra.push(it.description);
     if (it.serials?.length) extra.push(`IMEI/SN: ${it.serials.join(', ')}`);
-    if (it.warranty?.expiryDate && it.warranty.status === 'NEW_WARRANTY') extra.push(`Warranty till ${new Date(it.warranty.expiryDate).toLocaleDateString('en-IN')}`);
+    if (it.warranty?.expiryDate && it.warranty.status === 'NEW_WARRANTY') extra.push(`Warranty till ${new Date(it.warranty.expiryDate).toLocaleDateString('en-IN', { timeZone: TIME_ZONE })}`);
     const nameHeight = doc.heightOfString(it.name, { width: 224 }) + (extra.length ? doc.heightOfString(extra.join('\n'), { width: 224 }) : 0);
     if (y + nameHeight > 740) {
       doc.addPage();

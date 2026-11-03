@@ -20,6 +20,8 @@ const schema = z.object({
   JWT_EXPIRES_IN: z.string().default('12h'),
   COOKIE_NAME: z.string().default('pos_token'),
   COOKIE_SECURE: bool('false'),
+  /** IANA time zone of the shop, e.g. Asia/Kolkata. Required when hosted (servers run in UTC); defaults to the machine's zone. */
+  SHOP_TIMEZONE: z.string().optional(),
   CORS_ORIGINS: z
     .string()
     .default('http://localhost:3000')
